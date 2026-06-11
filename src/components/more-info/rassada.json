@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_more_info_rassadas",
+  "info": {
+    "displayName": "Rassada"
+  },
+  "options": {},
+  "attributes": {
+    "height": {
+      "type": "string"
+    },
+    "lenght": {
+      "type": "string"
+    },
+    "widht": {
+      "type": "string"
+    },
+    "from": {
+      "type": "string"
+    },
+    "material": {
+      "type": "string"
+    },
+    "color": {
+      "type": "string"
+    }
+  }
+}

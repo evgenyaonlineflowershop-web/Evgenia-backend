@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_more_info_gorshoks",
+  "info": {
+    "displayName": "Gorshok",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "litrs": {
+      "type": "string"
+    },
+    "color": {
+      "type": "string"
+    },
+    "from": {
+      "type": "string"
+    },
+    "height": {
+      "type": "string"
+    },
+    "diameters": {
+      "type": "string"
+    }
+  }
+}

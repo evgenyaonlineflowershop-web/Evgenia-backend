@@ -1,0 +1,51 @@
+{
+  "collectionName": "components_more_info_flower_details",
+  "info": {
+    "displayName": "FlowerDetail"
+  },
+  "options": {},
+  "attributes": {
+    "Brand": {
+      "type": "string"
+    },
+    "macca": {
+      "type": "string"
+    },
+    "componets": {
+      "type": "text"
+    },
+    "type": {
+      "type": "text"
+    },
+    "color": {
+      "type": "string"
+    },
+    "sort": {
+      "type": "text"
+    },
+    "prime": {
+      "type": "text"
+    },
+    "diameters": {
+      "type": "string"
+    },
+    "say": {
+      "type": "string"
+    },
+    "height": {
+      "type": "string"
+    },
+    "defends": {
+      "type": "text"
+    },
+    "seedlings": {
+      "type": "text"
+    },
+    "place": {
+      "type": "string"
+    },
+    "features": {
+      "type": "text"
+    }
+  }
+}
