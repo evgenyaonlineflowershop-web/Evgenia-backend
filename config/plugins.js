@@ -1,7 +1,7 @@
 module.exports = ({ env }) => ({
   upload: {
     config: {
-      provider: "strapi-provider-upload-supabase-v4",
+      provider: "strapi-provider-upload-supabase",
       providerOptions: {
         apiUrl: env("SUPABASE_API_URL"),
         apiKey: env("SUPABASE_API_KEY"),
