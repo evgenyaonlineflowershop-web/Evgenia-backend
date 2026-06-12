@@ -1,16 +1,15 @@
 module.exports = ({ env }) => ({
   upload: {
     config: {
-      provider: "",
+      provider: "strapi-provider-upload-supabase",
       providerOptions: {
-        apiUrl: env("SUPABASE_API_URL"),
+        baseUrl: env("SUPABASE_URL"),
+        url: env("SUPABASE_URL"),
         apiKey: env("SUPABASE_API_KEY"),
-        bucket: env("SUPABASE_BUCKET", "evgenia-media"), // Имя бакета из Шага 1
-        directory: "uploads",
-        options: {},
+        bucket: "evgenia-media",
       },
+      responsiveDimensions: false,
     },
-    responsiveDimensions: false,
   },
   email: {
     config: {
