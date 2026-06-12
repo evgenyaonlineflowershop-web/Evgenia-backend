@@ -1,27 +1,30 @@
-const path = require('path');
+const path = require("path");
 
 module.exports = ({ env }) => {
-  // Если в переменной окружения есть DATABASE_URL (как на Railway), 
+  // Если в переменной окружения есть DATABASE_URL (как на Railway),
   // то клиентом автоматически становится 'postgres', иначе 'sqlite'
-  const isProduction = env('DATABASE_URL');
-  const client = isProduction ? 'postgres' : env('DATABASE_CLIENT', 'sqlite');
+  const isProduction = env("DATABASE_URL");
+  const client = isProduction ? "postgres" : env("DATABASE_CLIENT", "sqlite");
 
   const connections = {
     postgres: {
       connection: {
-        connectionString: env('DATABASE_URL'),
+        connectionString: env("DATABASE_URL"),
         ssl: {
           rejectUnauthorized: false, // Обязательно для облачных баз вроде Railway
         },
       },
-      pool: { min: env.int('DATABASE_POOL_MIN', 2), max: env.int('DATABASE_POOL_MAX', 10) },
+      pool: {
+        min: env.int("DATABASE_POOL_MIN", 2),
+        max: env.int("DATABASE_POOL_MAX", 10),
+      },
     },
     sqlite: {
       connection: {
         filename: path.join(
           __dirname,
-          '..',
-          env('DATABASE_FILENAME', '.tmp/data.db') // Поправил на .tmp/data.db, как у тебя в .env
+          "..",
+          env("DATABASE_FILENAME", ".tmp/data.db") 
         ),
       },
       useNullAsDefault: true,
@@ -32,7 +35,7 @@ module.exports = ({ env }) => {
     connection: {
       client,
       ...connections[client],
-      acquireConnectionTimeout: env.int('DATABASE_CONNECTION_TIMEOUT', 60000),
+      acquireConnectionTimeout: env.int("DATABASE_CONNECTION_TIMEOUT", 60000),
     },
   };
 };
