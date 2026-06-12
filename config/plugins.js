@@ -5,7 +5,7 @@ module.exports = ({ env }) => ({
       providerOptions: {
         apiUrl: env('SUPABASE_API_URL'),
         apiKey: env('SUPABASE_API_KEY'),
-        bucket: env("evgenia-media"),
+        bucket: env('SUPABASE_API_BUCKET'),
       },
       responsiveDimensions: false,
     },
