@@ -3,10 +3,9 @@ module.exports = ({ env }) => ({
     config: {
       provider: "strapi-provider-upload-supabase",
       providerOptions: {
-        baseUrl: env("SUPABASE_URL"),
-        url: env("SUPABASE_URL"),
-        apiKey: env("SUPABASE_API_KEY"),
-        bucket: "evgenia-media",
+        apiUrl: env('SUPABASE_API_URL'),
+        apiKey: env('SUPABASE_API_KEY'),
+        bucket: env("evgenia-media"),
       },
       responsiveDimensions: false,
     },
