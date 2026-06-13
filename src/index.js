@@ -1,27 +1,10 @@
 "use strict";
 
-const nodemailer = require("nodemailer");
-
-// Используем прямой IPv4 адрес smtp.gmail.com для Railway 
-// и безопасно забираем пароль из переменных окружения
-const transporter = nodemailer.createTransport({
-  host: "74.125.131.108", // IPv4 для smtp.gmail.com
-  port: 587,
-  secure: false, 
-  auth: {
-    user: "evgenyaonlineflowershop@gmail.com",
-    pass: process.env.GMAIL_PASS, // Секрет защищен, GitGuardian будет доволен!
-  },
-  tls: {
-    servername: "smtp.gmail.com", 
-    rejectUnauthorized: false
-  }
-});
-
 module.exports = {
   register({ strapi }) {}, //
 
   bootstrap({ strapi }) { //
+    // Заглушаем стандартный плагин Strapi, как и раньше
     if (strapi.plugin("email")) { //
       strapi.plugin("email").service("email").send = async () => true; //
     } //
@@ -32,25 +15,39 @@ module.exports = {
         const { result } = event; //
         if (result.confirmed) return; //
 
+        // Генерируем 6-значный OTP-код
         const code = Math.floor(100000 + Math.random() * 900000).toString(); //
 
+        // Сохраняем код в базу данных
         await strapi.db.query("api::otp-code.otp-code").create({ //
           data: { code, user: result.id, used: false, publishedAt: new Date() }, //
         }); //
 
-        try { //
-          await transporter.sendMail({ //
-            from: '"EvgenyaFlowers" <evgenyaonlineflowershop@gmail.com>', //
-            to: result.email, //
-            subject: "Код подтверждения", //
-            html: `<div style="font-family: sans-serif; text-align: center;"><h1>Ваш код: ${code}</h1></div>`, //
-          }); //
-          console.log( //
-            `✅ Письмо с кодом ${code} успешно отправлено на ${result.email}` //
-          ); //
-        } catch (err) { //
-          console.error("❌ Ошибка отправки почты:", err); //
-        } //
+        try {
+          // Отправляем письмо через HTTP POST-запрос. Порты Railway его не заблокируют!
+          const response = await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${process.env.RESEND_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              from: "onboarding@resend.dev", // На бесплатном тарифе без своего домена отправка идет отсюда
+              to: result.email, //
+              subject: "Код подтверждения", //
+              html: `<div style="font-family: sans-serif; text-align: center;"><h1>Ваш код: ${code}</h1></div>`, //
+            }),
+          });
+
+          if (response.ok) {
+            console.log(`✅ Письмо с кодом ${code} успешно отправлено через Resend API на ${result.email}`);
+          } else {
+            const errorData = await response.json();
+            console.error("❌ Resend API вернул ошибку:", errorData);
+          }
+        } catch (err) {
+          console.error("❌ Сетевая ошибка при отправке через Resend API:", err);
+        }
       }, //
     }); //
   }, //
