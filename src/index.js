@@ -3,14 +3,22 @@
 const nodemailer = require("nodemailer");
 
 // Явно настраиваем ручной транспортер для Gmail
+// Настройка транспортера с обходом ограничений Railway (IPv4 + Port 587)
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 465,
-  secure: true, // Использовать SSL для порта 465
+  port: 587,
+  secure: false, // false для порта 587 (STARTTLS)
+  connectionTimeout: 10000, // 10 секунд на таймаут, чтобы запрос не висел по 2 минуты
+  greetingTimeout: 10000,
+  dnsTimeout: 10000,
   auth: {
     user: "evgenyaonlineflowershop@gmail.com",
-    pass: "pejgkvbeuzrbheqn", // Твой пароль приложения Google
+    pass: "pejgkvbeuzrbheqn", 
   },
+  tls: {
+    // Эта строчка принудительно отключает проверку IPv6, если Railway капризничает
+    rejectUnauthorized: false 
+  }
 });
 
 module.exports = {
