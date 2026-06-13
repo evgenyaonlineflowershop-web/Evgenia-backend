@@ -5,11 +5,11 @@ module.exports = ({ env }) => ({
       providerOptions: {
         apiUrl: env('SUPABASE_API_URL'),
         apiKey: env('SUPABASE_API_KEY'),
-        bucket: env('SUPABASE_API_BUCKET'),
-        // Ссылка на публичный доступ к файлам бакета:
-        baseUrl: `${env('SUPABASE_API_URL')}/storage/v1/object/public/${env('SUPABASE_API_BUCKET')}`,
+        bucket: env('SUPABASE_BUCKET'),
+        directory: "",
+        options: {},
       },
-      responsiveDimensions: true,
+      responsiveDimensions: false, // Давай пока вернем false, чтобы точно исключить нарезку
     },
   },
   email: {
