@@ -6,6 +6,8 @@ module.exports = ({ env }) => ({
         apiUrl: env('SUPABASE_API_URL'),
         apiKey: env('SUPABASE_API_KEY'),
         bucket: env('SUPABASE_API_BUCKET'),
+        // Ссылка на публичный доступ к файлам бакета:
+        baseUrl: `${env('SUPABASE_API_URL')}/storage/v1/object/public/${env('SUPABASE_API_BUCKET')}`,
       },
       responsiveDimensions: false,
     },
@@ -14,7 +16,7 @@ module.exports = ({ env }) => ({
     config: {
       provider: "nodemailer",
       providerOptions: {
-        host: "localhost", // Наша заглушка, чтобы дефолтный Strapi не шумел
+        host: "localhost",
         port: 25,
         ignoreTLS: true,
       },
