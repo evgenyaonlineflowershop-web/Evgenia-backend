@@ -1,36 +1,36 @@
 module.exports = [
-  'strapi::errors',
+  "strapi::errors",
   {
-    name: 'strapi::security',
+    name: "strapi::security",
     config: {
       contentSecurityPolicy: {
         useDefaults: true,
         directives: {
-          'connect-src': ["'self'", 'https:'],
-          'img-src': [
+          "connect-src": ["'self'", "https:"],
+          "img-src": [
             "'self'",
-            'data:',
-            'blob:',
-            '*.supabase.co', // Разрешаем загрузку картинок из Supabase
+            "data:",
+            "blob:",
+            "*.supabase.co", // Разрешаем загрузку картинок из Supabase
           ],
-          'media-src': [
+          "media-src": [
             "'self'",
-            'data:',
-            'blob:',
-            '*.supabase.co', // Разрешаем аудио/видео
+            "data:",
+            "blob:",
+            "*.supabase.co", // Разрешаем аудио/видео
           ],
           upgradeInsecureRequests: null,
         },
       },
     },
   },
-  'strapi::cors',
-  'strapi::poweredBy',
-  'strapi::logger',
-  'strapi::query',
-  'strapi::body',            // 1. Сначала Strapi парсит пришедший JSON
-  'global::fix-registration', // 2. ТЕПЕРЬ ТУТ МЫ! У нас есть доступ к готовым email и password
-  'strapi::session',
-  'strapi::favicon',
-  'strapi::public',
+  "strapi::cors",
+  "strapi::poweredBy",
+  "strapi::logger",
+  "strapi::query",
+  "strapi::body", // 1. Сначала Strapi парсит пришедший JSON
+  //'global::fix-registration', // 2. ТЕПЕРЬ ТУТ МЫ! У нас есть доступ к готовым email и password
+  "strapi::session",
+  "strapi::favicon",
+  "strapi::public",
 ];
