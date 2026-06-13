@@ -4,27 +4,30 @@ module.exports = {
   register({ strapi }) {}, //
 
   bootstrap({ strapi }) { //
-    // Заглушаем стандартный плагин Strapi, как и раньше
+    // Глушим стандартный встроенный плагин почты Strapi
     if (strapi.plugin("email")) { //
       strapi.plugin("email").service("email").send = async () => true; //
     } //
 
     strapi.db.lifecycles.subscribe({ //
       models: ["plugin::users-permissions.user"], //
+      
       async afterCreate(event) { //
         const { result } = event; //
+        
+        // Если пользователь зашел через Google Auth (уже подтвержден), код слать не нужно
         if (result.confirmed) return; //
 
-        // Генерируем 6-значный OTP-код
+        // Генерируем случайный 6-значный OTP-код
         const code = Math.floor(100000 + Math.random() * 900000).toString(); //
 
-        // Сохраняем код в базу данных
+        // Сохраняем сгенерированный код в базу данных Strapi
         await strapi.db.query("api::otp-code.otp-code").create({ //
           data: { code, user: result.id, used: false, publishedAt: new Date() }, //
         }); //
 
         try {
-          // Отправляем письмо через HTTP POST-запрос. Порты Railway его не заблокируют!
+          // ОБЯЗАТЕЛЬНО ДОБАВЛЯЕМ await, чтобы Strapi дождался окончания сетевого запроса!
           const response = await fetch("https://api.resend.com/emails", {
             method: "POST",
             headers: {
@@ -32,21 +35,28 @@ module.exports = {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              from: "onboarding@resend.dev", // На бесплатном тарифе без своего домена отправка идет отсюда
+              from: "onboarding@resend.dev", // На бесплатном аккаунте Resend адрес отправителя всегда такой
               to: result.email, //
-              subject: "Код подтверждения", //
-              html: `<div style="font-family: sans-serif; text-align: center;"><h1>Ваш код: ${code}</h1></div>`, //
+              subject: "Код подтверждения регистрации", 
+              html: `
+                <div style="font-family: sans-serif; text-align: center; padding: 20px;">
+                  <h2>Добро пожаловать!</h2>
+                  <p>Ваш одноразовый код подтверждения для завершения регистрации:</p>
+                  <h1 style="background: #f4f4f4; display: inline-block; padding: 10px 20px; letter-spacing: 2px; border-radius: 8px;">${code}</h1>
+                  <p style="color: #666; font-size: 12px; margin-top: 20px;">Если вы не запрашивали этот код, просто проигнорируйте письмо.</p>
+                </div>
+              `,
             }),
           });
 
           if (response.ok) {
-            console.log(`✅ Письмо с кодом ${code} успешно отправлено через Resend API на ${result.email}`);
+            console.log(`✅ Письмо с OTP-кодом ${code} успешно отправлено через Resend на ${result.email}`);
           } else {
-            const errorData = await response.json();
-            console.error("❌ Resend API вернул ошибку:", errorData);
+            const errorLog = await response.json();
+            console.error("❌ Resend API вернул ошибку при отправке:", errorLog);
           }
         } catch (err) {
-          console.error("❌ Сетевая ошибка при отправке через Resend API:", err);
+          console.error("❌ Сетевая ошибка отправки через Resend HTTP API:", err);
         }
       }, //
     }); //
