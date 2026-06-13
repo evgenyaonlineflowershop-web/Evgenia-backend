@@ -4,7 +4,7 @@ module.exports = {
   register({ strapi }) {}, //
 
   bootstrap({ strapi }) { //
-    // Глушим стандартный встроенный плагин почты Strapi
+    // Заглушаем стандартный встроенный плагин почты Strapi
     if (strapi.plugin("email")) { //
       strapi.plugin("email").service("email").send = async () => true; //
     } //
@@ -27,36 +27,40 @@ module.exports = {
         }); //
 
         try {
-          // ОБЯЗАТЕЛЬНО ДОБАВЛЯЕМ await, чтобы Strapi дождался окончания сетевого запроса!
-          const response = await fetch("https://api.resend.com/emails", {
+          // Отправляем через HTTP API Brevo (порты хостинга не блокируются)
+          const response = await fetch("https://api.brevo.com/v3/smtp/email", {
             method: "POST",
             headers: {
-              "Authorization": `Bearer ${process.env.RESEND_API_KEY}`,
-              "Content-Type": "application/json",
+              "accept": "application/json",
+              "api-key": process.env.BREVO_API_KEY,
+              "content-type": "application/json",
             },
             body: JSON.stringify({
-              from: "onboarding@resend.dev", // На бесплатном аккаунте Resend адрес отправителя всегда такой
-              to: result.email, //
-              subject: "Код подтверждения регистрации", 
-              html: `
+              sender: { 
+                name: "EvgenyaFlowers", 
+                email: "evgenyaonlineflowershop@gmail.com" // Твой проверенный Gmail-адрес
+              },
+              to: [{ email: result.email }], // Шлем на реальный email регистрирующегося юзера!
+              subject: "Код подтверждения регистрации",
+              htmlContent: `
                 <div style="font-family: sans-serif; text-align: center; padding: 20px;">
-                  <h2>Добро пожаловать!</h2>
+                  <h2>Добро пожаловать в EvgenyaFlowers!</h2>
                   <p>Ваш одноразовый код подтверждения для завершения регистрации:</p>
                   <h1 style="background: #f4f4f4; display: inline-block; padding: 10px 20px; letter-spacing: 2px; border-radius: 8px;">${code}</h1>
-                  <p style="color: #666; font-size: 12px; margin-top: 20px;">Если вы не запрашивали этот код, просто проигнорируйте письмо.</p>
+                  <p style="color: #666; font-size: 12px; margin-top: 20px;">Если вы не регистрировались на нашем сайте, просто проигнорируйте это письмо.</p>
                 </div>
               `,
             }),
           });
 
           if (response.ok) {
-            console.log(`✅ Письмо с OTP-кодом ${code} успешно отправлено через Resend на ${result.email}`);
+            console.log(`✅ Письмо с OTP-кодом ${code} успешно улетело через Brevo на ${result.email}`);
           } else {
             const errorLog = await response.json();
-            console.error("❌ Resend API вернул ошибку при отправке:", errorLog);
+            console.error("❌ Brevo API вернул ошибку при отправке:", errorLog);
           }
         } catch (err) {
-          console.error("❌ Сетевая ошибка отправки через Resend HTTP API:", err);
+          console.error("❌ Сетевая ошибка при запросе к Brevo API:", err);
         }
       }, //
     }); //
