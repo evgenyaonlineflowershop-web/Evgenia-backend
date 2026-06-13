@@ -9,7 +9,7 @@ module.exports = ({ env }) => ({
         // Ссылка на публичный доступ к файлам бакета:
         baseUrl: `${env('SUPABASE_API_URL')}/storage/v1/object/public/${env('SUPABASE_API_BUCKET')}`,
       },
-      responsiveDimensions: false,
+      responsiveDimensions: true,
     },
   },
   email: {
